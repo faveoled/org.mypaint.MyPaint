@@ -1,14 +1,15 @@
 {
     "app-id": "org.mypaint.MyPaint",
     "runtime": "org.gnome.Platform",
-    "runtime-version": "47",
+    "runtime-version": "49",
     "sdk": "org.gnome.Sdk",
     "command": "mypaint",
     "rename-desktop-file": "mypaint.desktop",
     "rename-appdata-file": "mypaint.appdata.xml",
     "finish-args": [
         "--share=ipc",
-        "--socket=x11",
+        "--socket=fallback-x11",
+        "--socket=wayland",
         "--filesystem=home",
         "--metadata=X-DConf=migrate-path=/org/mypaint/MyPaint/"
     ],
@@ -23,37 +24,56 @@
     "modules": [
         "shared-modules/intltool/intltool-0.51.json",
         {
-            "name": "open-blas",
-            "buildsystem": "cmake-ninja",
-            "builddir": true,
-            "config-opts": [
-                "-DBUILD_SHARED_LIBS=ON",
-                "-DBUILD_TESTING=OFF",
-                "-DNO_AFFINITY=ON",
-                "-DUSE_OPENMP=1",
-                "-DNO_WARMUP=1",
-                "-DCORE=CORE2",
-                "-DNUM_THREADS=64",
-                "-DDYNAMIC_ARCH=ON"
-            ],
+            "name": "openblas",
             "sources": [
                 {
                     "type": "archive",
-                    "url": "https://github.com/xianyi/OpenBLAS/archive/v0.3.24.tar.gz",
-                    "sha256": "ceadc5065da97bd92404cac7254da66cc6eb192679cf1002098688978d4d5132"
+                    "url": "https://github.com/xianyi/OpenBLAS/archive/v0.3.30.tar.gz",
+                    "sha256": "27342cff518646afb4c2b976d809102e368957974c250a25ccc965e53063c95d"
                 }
+            ],
+            "buildsystem": "cmake-ninja",
+            "config-opts": [
+                "-DBUILD_SHARED_LIBS=ON",
+                "-DDYNAMIC_ARCH=ON",
+                "-DUSE_OPENMP=ON",
+                "-DBUILD_WITHOUT_CBLAS=ON",
+                "-DNO_LAPACKE=1"
+            ],
+            "cleanup": [
+                "/include",
+                "/lib/pkgconfig"
             ]
         },
         "python3-modules.json",
         {
             "name": "json-c",
-            "buildsystem": "cmake-ninja",
             "sources": [
                 {
-                    "type": "archive",
-                    "url": "https://github.com/json-c/json-c/archive/refs/tags/json-c-0.17-20230812.tar.gz",
-                    "sha256": "024d302a3aadcbf9f78735320a6d5aedf8b77876c8ac8bbb95081ca55054c7eb"
+                    "type": "git",
+                    "url": "https://github.com/json-c/json-c.git",
+                    "tag": "json-c-0.18-20240915",
+                    "commit": "41a55cfcedb54d9c1874f2f0eb07b504091d7e37",
+                    "x-checker-data": {
+                        "type": "git",
+                        "tag-pattern": "^json-c-([\\d.]+)-[\\d]+$"
+                    }
+                },
+                {
+                    "type": "patch",
+                    "paths": [
+                        "patches/0001-Allow-build-with-cmake-4.0.0.patch"
+                    ]
                 }
+            ],
+            "buildsystem": "cmake-ninja",
+            "config-opts": [
+                "-DDISABLE_WERROR=ON",
+                "-DBUILD_TESTING=OFF"
+            ],
+            "cleanup": [
+                "/include",
+                "/lib/pkgconfig"
             ]
         },
         {
@@ -109,6 +129,10 @@
                     {
                         "type": "patch",
                         "path": "patches/python-311.patch"
+                    },
+                    {
+                        "type": "patch",
+                        "path": "patches/fix_missing_attr.patch"
                     }
             ],
             "build-commands": [
