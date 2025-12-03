@@ -29,7 +29,7 @@
                 {
                     "type": "archive",
                     "url": "https://github.com/xianyi/OpenBLAS/archive/v0.3.29.tar.gz",
-                    "sha256": "38240eee1b29e2bde47ebb5d61160207dc68668a54cac62c076bb5032013b1eb",
+                    "sha256": "38240eee1b29e2bde47ebb5d61160207dc68668a54cac62c076bb5032013b1eb"
                 }
             ],
             "buildsystem": "cmake-ninja",
@@ -53,11 +53,7 @@
                     "type": "git",
                     "url": "https://github.com/json-c/json-c.git",
                     "tag": "json-c-0.18-20240915",
-                    "commit": "41a55cfcedb54d9c1874f2f0eb07b504091d7e37",
-                    "x-checker-data": {
-                        "type": "git",
-                        "tag-pattern": "^json-c-([\\d.]+)-[\\d]+$"
-                    }
+                    "commit": "41a55cfcedb54d9c1874f2f0eb07b504091d7e37"
                 },
                 {
                     "type": "patch",
